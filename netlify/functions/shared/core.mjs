@@ -23,7 +23,16 @@ const VOC_TYPE_OPTIONS = [
   "문의",
 ];
 
-const SYSTEM_PROMPT = `
+function buildSystemPrompt({ testEnvUrl = "", testEnvId = "", testEnvPw = "" } = {}) {
+  const testEnvBlock = testEnvUrl
+    ? `# 테스트 환경 기본값\n- URL: ${testEnvUrl}\n- ID: ${testEnvId}\n- PW: ${testEnvPw}`
+    : `# 테스트 환경 기본값\n- URL: (TEST_ENV_URL 환경 변수로 설정)\n- ID: (TEST_ENV_ID 환경 변수로 설정)\n- PW: (TEST_ENV_PW 환경 변수로 설정)`;
+
+  const testEnvSection = testEnvUrl
+    ? `- URL: ${testEnvUrl}\n- ID: ${testEnvId}\n- PW: ${testEnvPw}`
+    : `- URL: (TEST_ENV_URL 환경 변수로 설정)\n- ID: (TEST_ENV_ID 환경 변수로 설정)\n- PW: (TEST_ENV_PW 환경 변수로 설정)`;
+
+  return `
 # 역할
 너는 꼼꼼한 QA 전문가이자 커뮤니케이션 능력이 뛰어난 서비스 기획자다.
 사용자가 전달하는 메모, 대화 내용, 테스트 결과, VOC 내용을 분석하여 개발자·기획자·디자이너가 즉시 이해할 수 있는 Jira 이슈 문서를 작성한다.
@@ -72,11 +81,7 @@ const SYSTEM_PROMPT = `
 - 사용자가 제공하지 않은 정보는 임의로 생성하지 않는다.
 - 문장 종결은 "~다."보다 명사형 또는 동사형을 우선 사용한다.
 
-# 테스트 환경 기본값
-- URL: https://exp277-cms.recruiter.co.kr
-- ID: hye0408
-- PW: quddkfl12!
-- PW 후보: quddkfl12! / 강아지12! / 고양이12!
+${testEnvBlock}
 
 # 요약 작성 규칙
 ## 버그 요약 형식
@@ -109,9 +114,7 @@ const SYSTEM_PROMPT = `
 ### 요약
 [PR] 에이전트 > 메뉴 위치 > 요약
 ### 테스트 환경
-- URL: https://exp277-cms.recruiter.co.kr
-- ID: hye0408
-- PW: quddkfl12!
+${testEnvSection}
 ### 재현 절차
 1. 메뉴 진입
 2. 테스트 조건 입력 또는 선택
@@ -134,9 +137,7 @@ const SYSTEM_PROMPT = `
 ### 요약
 [VOC][PR] 에이전트 > 메뉴 위치 > 요약
 ### 테스트 환경
-- URL: https://exp277-cms.recruiter.co.kr
-- ID: hye0408
-- PW: quddkfl12!
+${testEnvSection}
 ### 재현 절차
 1. 메뉴 진입
 2. 현재 사용 흐름 진행
@@ -152,6 +153,7 @@ const SYSTEM_PROMPT = `
 ### 기타 의견
 - 추가 논의 필요 사항 작성
 `.trim();
+}
 
 function getRequiredEnv(name) {
   const value = process.env[name];
@@ -185,6 +187,9 @@ function getRuntimeConfig() {
       기술지원: getEnv("JIRA_VOC_TYPE_TECH_SUPPORT_OPTION_ID", "10347"),
       문의: getEnv("JIRA_VOC_TYPE_INQUIRY_OPTION_ID", "10348"),
     },
+    testEnvUrl: getEnv("TEST_ENV_URL"),
+    testEnvId: getEnv("TEST_ENV_ID"),
+    testEnvPw: getEnv("TEST_ENV_PW"),
   };
 }
 
@@ -259,7 +264,7 @@ async function createIssueDrafts({ memo, customerName, category, vocType, severi
       input: [
         {
           role: "system",
-          content: [{ type: "input_text", text: SYSTEM_PROMPT }],
+          content: [{ type: "input_text", text: buildSystemPrompt({ testEnvUrl: config.testEnvUrl, testEnvId: config.testEnvId, testEnvPw: config.testEnvPw }) }],
         },
         {
           role: "user",
