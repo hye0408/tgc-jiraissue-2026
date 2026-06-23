@@ -74,9 +74,8 @@ const SYSTEM_PROMPT = `
 
 # 테스트 환경 기본값
 - URL: https://exp277-cms.recruiter.co.kr
-- ID: hye0408
-- PW: quddkfl12!
-- PW 후보: quddkfl12! / 강아지12! / 고양이12!
+- ID: your id
+- pw: your pw
 
 # 요약 작성 규칙
 ## 버그 요약 형식
@@ -110,8 +109,8 @@ const SYSTEM_PROMPT = `
 [PR] 에이전트 > 메뉴 위치 > 요약
 ### 테스트 환경
 - URL: https://exp277-cms.recruiter.co.kr
-- ID: hye0408
-- PW: quddkfl12!
+- ID: your id
+-pw: your pw
 ### 재현 절차
 1. 메뉴 진입
 2. 테스트 조건 입력 또는 선택
@@ -135,8 +134,8 @@ const SYSTEM_PROMPT = `
 [VOC][PR] 에이전트 > 메뉴 위치 > 요약
 ### 테스트 환경
 - URL: https://exp277-cms.recruiter.co.kr
-- ID: hye0408
-- PW: quddkfl12!
+- ID: your id
+- pw : your pw
 ### 재현 절차
 1. 메뉴 진입
 2. 현재 사용 흐름 진행
